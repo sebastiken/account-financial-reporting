@@ -36,6 +36,7 @@ _column_sizes = [
     ('move', 20),
     ('journal', 12),
     ('partner', 30),
+    ('ref', 20),
     ('label', 58),
     ('rec', 12),
     ('debit', 15),
@@ -184,6 +185,7 @@ class partner_ledger_xls(report_xls):
             ('move', 1, 0, 'text', _('Entry'), None, c_hdr_cell_style),
             ('journal', 1, 0, 'text', _('Journal'), None, c_hdr_cell_style),
             ('partner', 1, 0, 'text', _('Partner'), None, c_hdr_cell_style),
+            ('ref', 1, 0, 'text', _('Reference'), None, c_hdr_cell_style),
             ('label', 1, 0, 'text', _('Label'), None, c_hdr_cell_style),
             ('rec', 1, 0, 'text', _('Rec.'), None, c_hdr_cell_style),
             ('debit', 1, 0, 'text', _('Debit'), None, c_hdr_cell_style_right),
@@ -322,11 +324,11 @@ class partner_ledger_xls(report_xls):
 
                         if init_line or row_pos > row_start_partner:
                             cumbal_formula = rowcol_to_cell(
-                                row_pos - 1, 9) + '+'
+                                row_pos - 1, 10) + '+'
                         else:
                             cumbal_formula = ''
-                        debit_cell = rowcol_to_cell(row_pos, 7)
-                        credit_cell = rowcol_to_cell(row_pos, 8)
+                        debit_cell = rowcol_to_cell(row_pos, 8)
+                        credit_cell = rowcol_to_cell(row_pos, 9)
                         cumbal_formula += debit_cell + '-' + credit_cell
                         # Print row ledger line data #
 
@@ -348,6 +350,7 @@ class partner_ledger_xls(report_xls):
                             ('journal', 1, 0, 'text', line.get('jcode') or ''),
                             ('partner', 1, 0, 'text',
                              line.get('partner_name') or ''),
+                            ('ref', 1, 0, 'text', line.get('lref') or ''),
                             ('label', 1, 0, 'text', label),
                             ('rec_name', 1, 0, 'text',
                              line.get('rec_name') or ''),
@@ -374,23 +377,23 @@ class partner_ledger_xls(report_xls):
                     # end for line
 
                     # Print row Cumulated Balance by partner #
-                    debit_partner_start = rowcol_to_cell(row_start_partner, 7)
-                    debit_partner_end = rowcol_to_cell(row_pos - 1, 7)
+                    debit_partner_start = rowcol_to_cell(row_start_partner, 8)
+                    debit_partner_end = rowcol_to_cell(row_pos - 1, 8)
                     debit_partner_total = 'SUM(' + debit_partner_start + \
                         ':' + debit_partner_end + ')'
 
-                    credit_partner_start = rowcol_to_cell(row_start_partner, 8)
-                    credit_partner_end = rowcol_to_cell(row_pos - 1, 8)
+                    credit_partner_start = rowcol_to_cell(row_start_partner, 9)
+                    credit_partner_end = rowcol_to_cell(row_pos - 1, 9)
                     credit_partner_total = 'SUM(' + credit_partner_start + \
                         ':' + credit_partner_end + ')'
 
-                    bal_partner_debit = rowcol_to_cell(row_pos, 7)
-                    bal_partner_credit = rowcol_to_cell(row_pos, 8)
+                    bal_partner_debit = rowcol_to_cell(row_pos, 8)
+                    bal_partner_credit = rowcol_to_cell(row_pos, 9)
                     bal_partner_total = bal_partner_debit + \
                         '-' + bal_partner_credit
 
                     c_specs = [('empty%s' % x, 1, 0, 'text', None)
-                               for x in range(5)]
+                               for x in range(6)]
                     c_specs += [
                         ('init_bal', 1, 0, 'text',
                          _('Cumulated balance on Partner')),
