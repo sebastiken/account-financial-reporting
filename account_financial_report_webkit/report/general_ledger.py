@@ -56,6 +56,7 @@ class GeneralLedgerWebkit(report_sxw.rml_parse, CommonReportHeaderWebkit):
             'target_move': self._get_target_move,
             'initial_balance': self._get_initial_balance,
             'amount_currency': self._get_amount_currency,
+            'analytic': self._get_analytic,
             'display_target_move': self._get_display_target_move,
             'accounts': self._get_accounts_br,
             'additional_args': [
@@ -87,6 +88,7 @@ class GeneralLedgerWebkit(report_sxw.rml_parse, CommonReportHeaderWebkit):
         start_date = self._get_form_param('date_from', data)
         stop_date = self._get_form_param('date_to', data)
         do_centralize = self._get_form_param('centralize', data)
+        analytic = self._get_form_param('analytic', data)
         start_period = self.get_start_period_br(data)
         stop_period = self.get_end_period_br(data)
         fiscalyear = self.get_fiscalyear_br(data)
@@ -118,7 +120,7 @@ class GeneralLedgerWebkit(report_sxw.rml_parse, CommonReportHeaderWebkit):
 
         ledger_lines_memoizer = self._compute_account_ledger_lines(
             accounts, init_balance_memoizer, main_filter, target_move, start,
-            stop)
+            stop, analytic)
         objects = self.pool.get('account.account').browse(self.cursor,
                                                           self.uid,
                                                           accounts)
@@ -209,7 +211,7 @@ class GeneralLedgerWebkit(report_sxw.rml_parse, CommonReportHeaderWebkit):
 
     def _compute_account_ledger_lines(self, accounts_ids,
                                       init_balance_memoizer, main_filter,
-                                      target_move, start, stop):
+                                      target_move, start, stop, analytic):
         res = {}
         for acc_id in accounts_ids:
             move_line_ids = self.get_move_lines_ids(
@@ -218,14 +220,26 @@ class GeneralLedgerWebkit(report_sxw.rml_parse, CommonReportHeaderWebkit):
                 res[acc_id] = []
                 continue
 
-            lines = self._get_ledger_lines(move_line_ids, acc_id)
+            lines = self._get_ledger_lines(move_line_ids, acc_id, analytic)
             res[acc_id] = lines
         return res
 
-    def _get_ledger_lines(self, move_line_ids, account_id):
+    def _get_ledger_lines(self, move_line_ids, account_id, analytic=False):
         if not move_line_ids:
             return []
-        res = self._get_move_line_datas(move_line_ids)
+
+        # TODO: Format of add_fields is important to engage in SQL fields,
+        # so we need to add a "," as first char.
+        add_fields = ""
+        add_joins = ""
+        if analytic:
+            add_fields = ",an_acc.code AS lanalytic_code, an_acc.name AS lanalytic_name"
+            add_joins = "LEFT JOIN account_analytic_account an_acc ON " \
+                        "an_acc.id=l.analytic_account_id"
+
+        res = self._get_move_line_datas(move_line_ids,
+                add_fields=add_fields, add_joins=add_joins)
+
         # computing counter part is really heavy in term of ressouces
         # consuption looking for a king of SQL to help me improve it
         move_ids = [x.get('move_id') for x in res]

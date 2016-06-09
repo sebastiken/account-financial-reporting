@@ -116,6 +116,9 @@ class CommonReportHeaderWebkit(common_report_header):
     def _get_date_to(self, data):
         return self._get_form_param('date_to', data)
 
+    def _get_analytic(self, data):
+        return self._get_form_param('analytic', data)
+
     def _get_form_param(self, param, data, default=False):
         return data.get('form', {}).get(param, default)
 
@@ -495,7 +498,8 @@ class CommonReportHeaderWebkit(common_report_header):
 
     def _get_move_line_datas(self, move_line_ids,
                              order='per.special DESC, l.date ASC, \
-                             per.date_start ASC, m.name ASC'):
+                             per.date_start ASC, m.name ASC',
+                             add_fields="", add_joins=""):
         # Possible bang if move_line_ids is too long
         # We can not slice here as we have to do the sort.
         # If slice has to be done it means that we have to reorder in python
@@ -508,7 +512,8 @@ class CommonReportHeaderWebkit(common_report_header):
             return []
         if not isinstance(move_line_ids, list):
             move_line_ids = [move_line_ids]
-        monster = """
+
+        monster_fields = """
 SELECT l.id AS id,
             l.date AS ldate,
             j.code AS jcode ,
@@ -535,6 +540,9 @@ SELECT l.id AS id,
             i.type AS invoice_type,
             i.number AS invoice_number,
             l.date_maturity
+            %(additional_fields)s"""
+
+        monster_from = """
 FROM account_move_line l
     JOIN account_move m on (l.move_id=m.id)
     LEFT JOIN res_currency c on (l.currency_id=c.id)
@@ -545,8 +553,16 @@ FROM account_move_line l
     LEFT JOIN account_invoice i on (m.id =i.move_id)
     LEFT JOIN account_period per on (per.id=l.period_id)
     JOIN account_journal j on (l.journal_id=j.id)
-    WHERE l.id in %s"""
-        monster += (" ORDER BY %s" % (order,))
+    %(additional_joins)s
+"""
+
+        monster_where = """WHERE l.id in %s"""
+
+        monster_fields = monster_fields % {'additional_fields': add_fields}
+        monster_from = monster_from % {'additional_joins': add_joins}
+
+        monster = monster_fields + monster_from + monster_where + (" ORDER BY %s" % (order,))
+
         try:
             self.cursor.execute(monster, (tuple(move_line_ids),))
             res = self.cursor.dictfetchall()

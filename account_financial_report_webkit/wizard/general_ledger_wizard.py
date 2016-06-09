@@ -54,13 +54,17 @@ class AccountReportGeneralLedgerWizard(orm.TransientModel):
                     print all accounts."""),
         'centralize': fields.boolean(
             'Activate Centralization',
-            help='Uncheck to display all the details of centralized accounts.')
+            help='Uncheck to display all the details of centralized accounts.'),
+        'analytic': fields.boolean(
+            'Print Analytic Account',
+            help='Check to display analytic account on move lines.')
     }
     _defaults = {
         'amount_currency': False,
         'display_account': 'bal_mix',
         'account_ids': _get_account_ids,
         'centralize': True,
+        'analytic': False,
     }
 
     def _check_fiscalyear(self, cr, uid, ids, context=None):
@@ -85,7 +89,8 @@ class AccountReportGeneralLedgerWizard(orm.TransientModel):
                          ['amount_currency',
                           'display_account',
                           'account_ids',
-                          'centralize'],
+                          'centralize',
+                          'analytic'],
                          context=context)[0]
         data['form'].update(vals)
         return data

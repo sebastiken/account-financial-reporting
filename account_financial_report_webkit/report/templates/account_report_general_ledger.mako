@@ -102,6 +102,10 @@
                         <div class="act_as_cell" style="width: 70px;">${_('Journal')}</div>
                         ## account code
                         <div class="act_as_cell" style="width: 65px;">${_('Account')}</div>
+                         ## analytic account code
+                        %if analytic(data):
+                            <div class="act_as_cell" style="width: 85px;">${_('Analytic Account')}</div>
+                        %endif
                         ## partner
                         <div class="act_as_cell" style="width: 140px;">${_('Partner')}</div>
                         ## move reference
@@ -144,6 +148,10 @@
                           <div class="act_as_cell"></div>
                           ## account code
                           <div class="act_as_cell"></div>
+                          ## analytic account code
+                          %if analytic(data):
+                              <div class="act_as_cell"></div>
+                          %endif
                           ## partner
                           <div class="act_as_cell"></div>
                           ## move reference
@@ -190,6 +198,10 @@
                           <div class="act_as_cell">${line.get('jcode') or ''}</div>
                           ## account code
                           <div class="act_as_cell">${account.code}</div>
+                          ## analytic account code
+                          %if analytic(data):
+                              <div class="act_as_cell">${line.get('lanalytic_name') or ''}</div>
+                          %endif
                           ## partner
                           <div class="act_as_cell overflow_ellipsis">${line.get('partner_name') or ''}</div>
                           ## move reference
