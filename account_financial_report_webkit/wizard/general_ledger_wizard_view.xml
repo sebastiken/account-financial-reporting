@@ -34,7 +34,7 @@
                             <group colspan="4" col="2">
                                 <field name="amount_currency"/>
                                 <field name="centralize"/>
-                                <field name="analytic"/>
+                                <field name="analytic" groups="analytic.group_analytic_accounting"/>
                             </group>
                         </page>
                     </page>
