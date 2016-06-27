@@ -104,6 +104,7 @@
                         <div class="act_as_cell" style="width: 65px;">${_('Account')}</div>
                          ## analytic account code
                         %if analytic(data):
+                            <div class="act_as_cell" style="width: 55px;">${_('Analytic Code')}</div>
                             <div class="act_as_cell" style="width: 85px;">${_('Analytic Account')}</div>
                         %endif
                         ## partner
@@ -150,6 +151,7 @@
                           <div class="act_as_cell"></div>
                           ## analytic account code
                           %if analytic(data):
+                              <div class="act_as_cell"></div>
                               <div class="act_as_cell"></div>
                           %endif
                           ## partner
@@ -200,6 +202,7 @@
                           <div class="act_as_cell">${account.code}</div>
                           ## analytic account code
                           %if analytic(data):
+                              <div class="act_as_cell">${line.get('lanalytic_code') or ''}</div>
                               <div class="act_as_cell">${line.get('lanalytic_name') or ''}</div>
                           %endif
                           ## partner

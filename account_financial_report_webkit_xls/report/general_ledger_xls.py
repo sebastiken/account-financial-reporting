@@ -36,6 +36,7 @@ _column_sizes = [
     ('move', 20),
     ('journal', 12),
     ('account_code', 12),
+    ('analytic_code', 12),
     ('analytic_account', 30),
     ('partner', 30),
     ('label', 45),
@@ -179,10 +180,16 @@ class general_ledger_xls(report_xls):
         # Add analytic_account_id
         account_code_index = 4
         cumul_balance_index = 7
+        initial_balance_pos = 6
         if _p.analytic(data):
+            initial_balance_pos += 2
             cumul_balance_index += 1
-            c_specs.insert(account_code_index+1, ('analytic_account', 1, 0, 'text',
+            c_specs.insert(account_code_index+1, ('analytic_code', 1, 0, 'text',
+             _('Analytic Code'), None, c_hdr_cell_style))
+            cumul_balance_index += 1
+            c_specs.insert(account_code_index+2, ('analytic_account', 1, 0, 'text',
              _('Analytic Account'), None, c_hdr_cell_style))
+
 
         if _p.amount_currency(data):
             c_specs += [
@@ -240,7 +247,7 @@ class general_ledger_xls(report_xls):
                     cumul_balance_curr = init_balance.get(
                         'init_balance_currency') or 0.0
                     c_specs = [('empty%s' % x, 1, 0, 'text', None)
-                               for x in range(6)]
+                               for x in range(initial_balance_pos)]
                     c_specs += [
                         ('init_bal', 1, 0, 'text', _('Initial Balance')),
                         ('counterpart', 1, 0, 'text', None),
@@ -305,6 +312,8 @@ class general_ledger_xls(report_xls):
 
                     if _p.analytic(data):
                         c_specs.insert(account_code_index+1,
+                                ('analytic_code', 1, 0, 'text', line.get('lanalytic_code') or ''))
+                        c_specs.insert(account_code_index+2,
                                 ('analytic_account', 1, 0, 'text', line.get('lanalytic_name') or ''))
 
                     if _p.amount_currency(data):
