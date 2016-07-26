@@ -39,6 +39,7 @@ _column_sizes = [
     ('analytic_code', 12),
     ('analytic_account', 30),
     ('partner', 30),
+    ('ref', 30),
     ('label', 45),
     ('counterpart', 30),
     ('debit', 15),
@@ -167,6 +168,7 @@ class general_ledger_xls(report_xls):
             ('account_code', 1, 0, 'text',
              _('Account'), None, c_hdr_cell_style),
             ('partner', 1, 0, 'text', _('Partner'), None, c_hdr_cell_style),
+            ('ref', 1, 0, 'text', _('Reference'), None, c_hdr_cell_style),
             ('label', 1, 0, 'text', _('Label'), None, c_hdr_cell_style),
             ('counterpart', 1, 0, 'text',
              _('Counterpart'), None, c_hdr_cell_style),
@@ -179,8 +181,8 @@ class general_ledger_xls(report_xls):
 
         # Add analytic_account_id
         account_code_index = 4
-        cumul_balance_index = 7
-        initial_balance_pos = 6
+        cumul_balance_index = 8
+        initial_balance_pos = 7
         if _p.analytic(data):
             initial_balance_pos += 2
             cumul_balance_index += 1
@@ -299,6 +301,7 @@ class general_ledger_xls(report_xls):
                         ('account_code', 1, 0, 'text', account.code),
                         ('partner', 1, 0, 'text',
                          line.get('partner_name') or ''),
+                        ('ref', 1, 0, 'text', line.get('lref')),
                         ('label', 1, 0, 'text', label),
                         ('counterpart', 1, 0, 'text',
                          line.get('counterparts') or ''),
