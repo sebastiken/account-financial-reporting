@@ -223,6 +223,7 @@ class open_invoices_xls(report_xls):
             c_specs += [('partner', 1, 0, 'text', _('Partner'),
                          None, self.style_yellow_bold), ]
         c_specs += [
+            ('ref', 1, 0, 'text', _('Reference'), None, self.style_yellow_bold),
             ('label', 1, 0, 'text', _('Label'), None, self.style_yellow_bold),
             ('rec', 1, 0, 'text', _('Rec.'), None, self.style_yellow_bold),
             ('due_date', 1, 0, 'text', _('Due Date'),
@@ -323,6 +324,7 @@ class open_invoices_xls(report_xls):
             ('entry', 1, 0, 'text', line.get('move_name') or ''),
             ('journal', 1, 0, 'text', line.get('jcode') or ''),
             ('partner', 1, 0, 'text', line.get('partner_name') or ''),
+            ('ref', 1, 0, 'text', line.get('lref') or ''),
             ('label', 1, 0, 'text', label),
             ('rec', 1, 0, 'text', line.get('rec_name') or ''),
         ]
