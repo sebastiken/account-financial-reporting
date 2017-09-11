@@ -32,7 +32,7 @@ from openerp.tools.translate import _
 
 
 class open_invoices_xls(report_xls):
-    column_sizes = [12, 12, 20, 15, 30, 30, 14, 14, 14, 14, 14, 14, 10]
+    column_sizes = [12, 12, 20, 15, 30, 30, 14, 14, 14, 14, 14, 14, 14, 10]
 
     def global_initializations(self, wb, _p, xlwt, _xs, objects, data):
         # this procedure will initialise variables and Excel cell styles and
@@ -55,11 +55,11 @@ class open_invoices_xls(report_xls):
             if hasattr(acc, 'grouped_ledger_lines'):
                 group_lines = True
         if group_lines:
-            self.nbr_columns = 12
-        elif _p.amount_currency(data) and not group_lines:
             self.nbr_columns = 13
+        elif _p.amount_currency(data) and not group_lines:
+            self.nbr_columns = 14
         else:
-            self.nbr_columns = 11
+            self.nbr_columns = 12
         # -------------------------------------------------------
         # cell style for report title
         self.style_font12 = xlwt.easyxf(_xs['xls_title'])
@@ -161,11 +161,11 @@ class open_invoices_xls(report_xls):
             ('df', 2, 0, 'text', _p.filter_form(data) == 'filter_date' and _(
                 'Dates Filter') or _('Periods Filter'), None,
              self.style_bold_blue_center),
-            ('cd', 1 if self.nbr_columns == 11 else 2, 0, 'text',
+            ('cd', 1 if self.nbr_columns == 12 else 2, 0, 'text',
              _('Clearance Date'), None, self.style_bold_blue_center),
             ('af', 2, 0, 'text', _('Accounts Filter'),
              None, self.style_bold_blue_center),
-            ('tm', 3 if self.nbr_columns == 13 else 2, 0, 'text',
+            ('tm', 3 if self.nbr_columns == 14 else 2, 0, 'text',
              _('Target Moves'), None, self.style_bold_blue_center),
         ]
         row_data = self.xls_row_template(c_specs, [x[0] for x in c_specs])
@@ -195,12 +195,12 @@ class open_invoices_xls(report_xls):
             df += _p.stop_period.name if _p.stop_period else u''
         c_specs += [
             ('df', 2, 0, 'text', df, None, self.style_center),
-            ('cd', 1 if self.nbr_columns == 11 else 2, 0, 'text',
+            ('cd', 1 if self.nbr_columns == 12 else 2, 0, 'text',
              _p.date_until, None, self.style_center),  # clearance date
             ('af', 2, 0, 'text', _('Custom Filter')
              if _p.partner_ids else _p.display_partner_account(data), None,
              self.style_center),
-            ('tm', 3 if self.nbr_columns == 13 else 2, 0, 'text',
+            ('tm', 3 if self.nbr_columns == 14 else 2, 0, 'text',
              _p.display_target_move(data), None, self.style_center),
         ]
         row_data = self.xls_row_template(c_specs, [x[0] for x in c_specs])
@@ -342,9 +342,9 @@ class open_invoices_xls(report_xls):
         ]
 
         # determine the formula of the cumulated balance
-        debit_cell = rowcol_to_cell(row_position, 8)
-        credit_cell = rowcol_to_cell(row_position, 9)
-        previous_balance = rowcol_to_cell(row_position - 1, 10)
+        debit_cell = rowcol_to_cell(row_position, 9)
+        credit_cell = rowcol_to_cell(row_position, 10)
+        previous_balance = rowcol_to_cell(row_position - 1, 11)
 
         # if it is the first line, the balance is only debit - credit
         if line_number == 1:
@@ -401,9 +401,9 @@ class open_invoices_xls(report_xls):
             style_line_date = self.style_date
             style_line_decimal = self.style_decimal
 
-        debit_cell = rowcol_to_cell(row_position, 7)
-        credit_cell = rowcol_to_cell(row_position, 8)
-        previous_balance = rowcol_to_cell(row_position - 1, 9)
+        debit_cell = rowcol_to_cell(row_position, 8)
+        credit_cell = rowcol_to_cell(row_position, 9)
+        previous_balance = rowcol_to_cell(row_position - 1, 10)
 
         # if it is the first line, the balance is only debit - credit
         if line_number == 1:
@@ -462,7 +462,7 @@ class open_invoices_xls(report_xls):
 
         # the text "Cumulated Balance on Partner starts in column 4 when
         # selecting the option regroup by currency, 5 in  the other case
-        start_col = 5
+        start_col = 6
 
         debit_partner_start = rowcol_to_cell(row_start_partner, start_col + 3)
         debit_partner_end = rowcol_to_cell(row_position - 1, start_col + 3)
@@ -524,7 +524,7 @@ class open_invoices_xls(report_xls):
 
         # the text "Cumulated Balance on Partner starts in column 4 when
         # selecting the option regroup by currency, 5 in  the other case
-        start_col = 4
+        start_col = 5
 
         debit_partner_start = rowcol_to_cell(row_start_partner, start_col + 3)
         debit_partner_end = rowcol_to_cell(row_position - 1, start_col + 3)
@@ -587,7 +587,7 @@ class open_invoices_xls(report_xls):
         # sum of the debit & credit data
         # the text "Cumulated Balance on Partner starts in column 4 when
         # selecting the option regroup by currency, 5 in  the other case
-        start_col = 5
+        start_col = 6
 
         # range in which we search for the text "Cumulated Balance on Partner"
         reference_start = rowcol_to_cell(row_start_account, start_col)
@@ -661,7 +661,7 @@ class open_invoices_xls(report_xls):
         # sum of the debit & credit data
         # the text "Cumulated Balance on Partner starts in column 4 when
         # selecting the option regroup by currency, 5 in  the other case
-        start_col = 4
+        start_col = 5
 
         # range in which we search for the text "Cumulated Balance on Partner"
         reference_start = rowcol_to_cell(row_start_account, start_col)
